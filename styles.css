@@ -2229,3 +2229,51 @@ textarea[aria-invalid="true"] {
     transform: none;
   }
 }
+
+/* Mobile horizontal overflow fix */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .container,
+  .header__inner,
+  .hero,
+  .section,
+  .projects-grid,
+  .skills-grid,
+  .contact-grid {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .project-card,
+  .skill-card,
+  .contact-card,
+  .about-card {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  img,
+  video,
+  iframe {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  * {
+    box-sizing: border-box;
+  }
+
+  .hero__visual,
+  .hero__content,
+  .section__header,
+  .projects-grid,
+  .skills-grid {
+    min-width: 0;
+  }
+}
