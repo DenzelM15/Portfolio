@@ -1,136 +1,436 @@
 // script.js
+
 const root = document.documentElement;
 
-/* Theme toggle with localStorage */
-const themeBtn = document.querySelector('.theme-toggle');
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+/* =========================================================
+   THEME TOGGLE
+   ========================================================= */
+
+const themeBtn = document.querySelector(".theme-toggle");
+
+const savedTheme = localStorage.getItem("theme");
+
+if (savedTheme) {
+  root.setAttribute("data-theme", savedTheme);
+}
+
 updateThemeIcon();
 
-themeBtn?.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', current);
-  localStorage.setItem('theme', current);
+themeBtn?.addEventListener("click", () => {
+  const current =
+    root.getAttribute("data-theme") === "light"
+      ? "dark"
+      : "light";
+
+  root.setAttribute("data-theme", current);
+
+  localStorage.setItem("theme", current);
+
   updateThemeIcon();
 });
+
 function updateThemeIcon() {
-  const t = document.documentElement.getAttribute('data-theme');
-  themeBtn?.setAttribute('aria-label', t === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+  const theme =
+    root.getAttribute("data-theme");
+
+  themeBtn?.setAttribute(
+    "aria-label",
+    theme === "light"
+      ? "Switch to dark theme"
+      : "Switch to light theme"
+  );
 }
 
-/* Mobile nav */
-const toggle = document.querySelector('.nav__toggle');
-const menu = document.querySelector('.nav__menu');
-toggle?.addEventListener('click', () => {
-  const open = menu.classList.toggle('open');
-  toggle.setAttribute('aria-expanded', String(open));
-});
-menu?.querySelectorAll('.nav__link').forEach(link => link.addEventListener('click', () => {
-  menu.classList.remove('open');
-  toggle.setAttribute('aria-expanded', 'false');
-}));
+/* =========================================================
+   MOBILE NAVIGATION
+   ========================================================= */
 
-/* Hero glow follow */
-const glow = document.querySelector('.glow');
-document.addEventListener('pointermove', (e) => {
-  if (!glow) return;
-  const x = (e.clientX / window.innerWidth) * 100;
-  const y = (e.clientY / window.innerHeight) * 100;
-  glow.style.setProperty('--x', `${x}%`);
-  glow.style.setProperty('--y', `${y}%`);
+const toggle =
+  document.querySelector(".nav__toggle");
+
+const menu =
+  document.querySelector(".nav__menu");
+
+toggle?.addEventListener("click", () => {
+  const open =
+    menu.classList.toggle("open");
+
+  toggle.setAttribute(
+    "aria-expanded",
+    String(open)
+  );
+
+  toggle.setAttribute(
+    "aria-label",
+    open
+      ? "Close menu"
+      : "Open menu"
+  );
 });
 
-/* Scroll reveal */
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add('is-visible');
+menu
+  ?.querySelectorAll(".nav__link")
+  .forEach(link => {
+    link.addEventListener("click", () => {
+      menu.classList.remove("open");
+
+      toggle.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      toggle.setAttribute(
+        "aria-label",
+        "Open menu"
+      );
+    });
   });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-/* Animate counters */
-function animateCount(el) {
-  const end = Number(el.dataset.count || 0);
-  const dur = 1100;
-  const start = performance.now();
-  function tick(now) {
-    const p = Math.min((now - start) / dur, 1);
-    el.textContent = Math.floor(p * end);
-    if (p < 1) requestAnimationFrame(tick);
+/* =========================================================
+   HERO GLOW
+   ========================================================= */
+
+const glow =
+  document.querySelector(".glow");
+
+document.addEventListener(
+  "pointermove",
+  event => {
+    if (!glow) return;
+
+    const x =
+      (event.clientX / window.innerWidth) *
+      100;
+
+    const y =
+      (event.clientY / window.innerHeight) *
+      100;
+
+    glow.style.setProperty(
+      "--x",
+      `${x}%`
+    );
+
+    glow.style.setProperty(
+      "--y",
+      `${y}%`
+    );
   }
+);
+
+/* =========================================================
+   SCROLL REVEAL
+   ========================================================= */
+
+const observer =
+  new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add(
+            "is-visible"
+          );
+        }
+      });
+    },
+    {
+      threshold: 0.12
+    }
+  );
+
+document
+  .querySelectorAll(".reveal")
+  .forEach(element => {
+    observer.observe(element);
+  });
+
+/* =========================================================
+   COUNTERS
+   ========================================================= */
+
+function animateCount(element) {
+  const end =
+    Number(
+      element.dataset.count || 0
+    );
+
+  const duration = 1100;
+
+  const start =
+    performance.now();
+
+  function tick(now) {
+    const progress =
+      Math.min(
+        (now - start) / duration,
+        1
+      );
+
+    element.textContent =
+      Math.floor(progress * end);
+
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    }
+  }
+
   requestAnimationFrame(tick);
 }
-document.querySelectorAll('.stat__num').forEach(animateCount);
 
-/* Filter projects */
-const chips = document.querySelectorAll('.chip');
-const cards = document.querySelectorAll('.card');
-chips.forEach(chip => chip.addEventListener('click', () => {
-  chips.forEach(c => c.classList.remove('active'));
-  chip.classList.add('active');
-  const f = chip.dataset.filter;
-  cards.forEach(card => {
-    const show = f === 'all' || card.dataset.cat === f;
-    card.style.display = show ? '' : 'none';
+document
+  .querySelectorAll(".stat__num")
+  .forEach(animateCount);
+
+/* =========================================================
+   PROJECT FILTERS
+   ========================================================= */
+
+const chips =
+  document.querySelectorAll(".chip");
+
+const cards =
+  document.querySelectorAll(
+    ".grid .card"
+  );
+
+chips.forEach(chip => {
+  chip.addEventListener("click", () => {
+
+    chips.forEach(item => {
+      item.classList.remove("active");
+
+      item.setAttribute(
+        "aria-selected",
+        "false"
+      );
+    });
+
+    chip.classList.add("active");
+
+    chip.setAttribute(
+      "aria-selected",
+      "true"
+    );
+
+    const filter =
+      chip.dataset.filter;
+
+    cards.forEach(card => {
+      const show =
+        filter === "all" ||
+        card.dataset.cat === filter;
+
+      card.style.display =
+        show ? "" : "none";
+    });
   });
-}));
-
-/* Modals */
-function openModal(sel) {
-  const dialog = document.querySelector(sel);
-  if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
-}
-function closeModal(d) { d.close(); }
-document.querySelectorAll('[data-modal]').forEach(btn => {
-  btn.addEventListener('click', () => openModal(btn.dataset.modal));
-});
-document.querySelectorAll('.modal').forEach(d => {
-  d.addEventListener('click', (e) => { if (e.target === d) closeModal(d); });
-  d.querySelector('.modal__close')?.addEventListener('click', () => closeModal(d));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && d.open) closeModal(d); });
 });
 
-/* Form validation */
-const form = document.querySelector('.form');
-const note = document.querySelector('.form__note');
-form?.addEventListener('submit', (e) => {
-  e.preventDefault();
-  let valid = true;
+/* =========================================================
+   MODALS
+   ========================================================= */
 
-  const name = form.name;
-  const email = form.email;
-  const message = form.message;
+function openModal(selector) {
+  const dialog =
+    document.querySelector(selector);
 
-  clearError(name); clearError(email); clearError(message);
-
-  if (!name.value.trim()) { setError(name, 'Please enter your name.'); valid = false; }
-  if (!email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { setError(email, 'Please enter a valid email.'); valid = false; }
-  if (message.value.trim().length < 10) { setError(message, 'Message should be at least 10 characters.'); valid = false; }
-
-  if (!valid) {
-    note.textContent = 'Please fix the errors above.';
-    return;
+  if (
+    dialog &&
+    typeof dialog.showModal === "function"
+  ) {
+    dialog.showModal();
   }
-
-  note.textContent = 'Thanks! Your message was validated locally.';
-  form.reset();
-});
-function setError(input, msg) {
-  const wrap = input.closest('.field');
-  wrap.querySelector('.error').textContent = msg;
-  input.setAttribute('aria-invalid', 'true');
 }
+
+function closeModal(dialog) {
+  if (dialog?.open) {
+    dialog.close();
+  }
+}
+
+document
+  .querySelectorAll("[data-modal]")
+  .forEach(button => {
+    button.addEventListener(
+      "click",
+      () => {
+        openModal(
+          button.dataset.modal
+        );
+      }
+    );
+  });
+
+document
+  .querySelectorAll(".modal")
+  .forEach(dialog => {
+
+    dialog.addEventListener(
+      "click",
+      event => {
+        if (event.target === dialog) {
+          closeModal(dialog);
+        }
+      }
+    );
+
+    dialog
+      .querySelector(".modal__close")
+      ?.addEventListener(
+        "click",
+        () => {
+          closeModal(dialog);
+        }
+      );
+  });
+
+document.addEventListener(
+  "keydown",
+  event => {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    document
+      .querySelectorAll(".modal")
+      .forEach(dialog => {
+        if (dialog.open) {
+          closeModal(dialog);
+        }
+      });
+  }
+);
+
+/* =========================================================
+   CONTACT FORM VALIDATION
+   ========================================================= */
+
+const form =
+  document.querySelector(".form");
+
+const note =
+  document.querySelector(".form__note");
+
+form?.addEventListener(
+  "submit",
+  event => {
+    event.preventDefault();
+
+    let valid = true;
+
+    const name = form.name;
+
+    const email = form.email;
+
+    const message = form.message;
+
+    clearError(name);
+
+    clearError(email);
+
+    clearError(message);
+
+    if (!name.value.trim()) {
+      setError(
+        name,
+        "Please enter your name."
+      );
+
+      valid = false;
+    }
+
+    if (
+      !email.value.match(
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      )
+    ) {
+      setError(
+        email,
+        "Please enter a valid email."
+      );
+
+      valid = false;
+    }
+
+    if (
+      message.value.trim().length < 10
+    ) {
+      setError(
+        message,
+        "Message should be at least 10 characters."
+      );
+
+      valid = false;
+    }
+
+    if (!valid) {
+      note.textContent =
+        "Please fix the errors above.";
+
+      return;
+    }
+
+    note.textContent =
+      "Thanks! Your message was validated locally.";
+
+    form.reset();
+  }
+);
+
+function setError(input, message) {
+  const wrapper =
+    input.closest(".field");
+
+  wrapper.querySelector(
+    ".error"
+  ).textContent = message;
+
+  input.setAttribute(
+    "aria-invalid",
+    "true"
+  );
+}
+
 function clearError(input) {
-  const wrap = input.closest('.field');
-  wrap.querySelector('.error').textContent = '';
-  input.removeAttribute('aria-invalid');
+  const wrapper =
+    input.closest(".field");
+
+  wrapper.querySelector(
+    ".error"
+  ).textContent = "";
+
+  input.removeAttribute(
+    "aria-invalid"
+  );
 }
 
-/* Footer year */
-document.getElementById('year').textContent = new Date().getFullYear();
+/* =========================================================
+   FOOTER YEAR
+   ========================================================= */
 
-/* Back to top show/hide */
-const toTop = document.querySelector('.to-top');
-window.addEventListener('scroll', () => {
-  toTop.style.opacity = window.scrollY > 600 ? '1' : '.6';
-});
+const year =
+  document.getElementById("year");
+
+if (year) {
+  year.textContent =
+    new Date().getFullYear();
+}
+
+/* =========================================================
+   BACK TO TOP
+   ========================================================= */
+
+const toTop =
+  document.querySelector(".to-top");
+
+window.addEventListener(
+  "scroll",
+  () => {
+    if (!toTop) return;
+
+    toTop.style.opacity =
+      window.scrollY > 600
+        ? "1"
+        : ".6";
+  }
+);
